@@ -1,33 +1,32 @@
 const webpack = require('webpack');
-const common = require('./webpack.common');
-const {merge} = require('webpack-merge');
 
-const renderer = merge(common,require('./webpack.renderer'));
-const main = merge(common,require('./webpack.main'));
-const preload = merge(common,require('./webpack.preload'));
+const renderer = require('./webpack.renderer');
+const main = require('./webpack.main');
+const preload = require('./webpack.preload');
 const child_process = require('child_process');
 
-function compile(config,callback = ()=>{}){
-    const compiler = webpack(config);
-    compiler.run((err, stats) => {
-        if (err) {
-            console.error(err);
-            return
-        }
-        console.log(stats.toString({colors: true}))
-        compiler.close(callback);
-    });
+const isWatch = process.argv.includes('--watch')
+
+const compiler = webpack([
+    renderer,
+    preload,
+    main
+])
+
+function compilerCallback(err,stats){
+    if(err){
+        console.error(err);
+    }
+    console.log(stats.toString({colors: true}));
 }
 
-webpack([
-    renderer,preload,main
-],(stats)=>{
-    console.log(stats.toString({colors: true}));
-    child_process.exec('npm start')
-})
-
-compile(renderer,()=>{
-    compile(main);
-    compile(preload);
-});
-
+if(isWatch){
+    console.log('watching-----------------------')
+    compiler.watch({
+        aggregateTimeout:300,
+        poll:undefined,
+        ignored:/node_modules/
+    },compilerCallback)
+}else{
+    compiler.run(compilerCallback)
+}

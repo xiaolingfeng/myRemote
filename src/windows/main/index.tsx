@@ -4,29 +4,32 @@ import './index.less';
 // import {desktopCapturer} from 'electron';
 
 class Main extends Component{
-    constructor(props) {
+    constructor(props:any) {
         super(props);
         this.video=React.createRef()
     }
-    handleClick=()=>{
-        console.log('hi');
-        this.startRecord();
+
+    video
+
+    handleRecord=()=>{
+        globalThis.electron.startRecord(this.video.current)
+    }
+
+    handleCapture=()=>{
+        console.log('capture test');
+        globalThis.electron.capture()
     }
 
     componentDidMount() {
 
     }
 
-    startRecord(){
-        console.log('startRecord');
-        window.electron.startRecord()
-    }
-
     render(){
         return (
             <div>
                 <video ref={this.video}/>
-                <button onClick={this.handleClick}>Start</button>
+                <button onClick={this.handleRecord}>录屏</button>
+                <button onClick={this.handleCapture}>截图</button>
             </div>
         )
     }

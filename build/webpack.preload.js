@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs');
-
+const {merge} = require('webpack-merge');
+const common = require('./webpack.common');
 const dir =  fs.readdirSync(path.resolve(__dirname,'../src/windows'));
 const entry = {};
 dir.forEach(dirname=>{
-    const pathname = path.resolve(__dirname,`../src/windows/${dirname}/preload.js`);
+    const pathname = path.resolve(__dirname,`../src/windows/${dirname}/preload.ts`);
     try{
         fs.accessSync(pathname);
         entry[dirname] = pathname;
@@ -15,22 +16,10 @@ const config = {
     entry,
     target:'electron-preload',
     output: {
-        filename:'windows/[name]/preload.js'
+        filename:'preload/[name].js'
     },
     module: {
         rules: [
-            {
-                test: /\.js$/,
-                use: [
-                    {
-                        loader: "babel-loader",
-                        options: {
-                            presets: ['@babel/preset-react']
-                        }
-                    },
-                ],
-                exclude: /node_modules/
-            },
             {
                 test: /\.jpe?g|png|gif|svg|eof|ttf|wof/,
                 loader: "file-loader",
@@ -40,4 +29,4 @@ const config = {
     devtool: 'source-map',
 }
 
-module.exports = config;
+module.exports = merge(common,config);
