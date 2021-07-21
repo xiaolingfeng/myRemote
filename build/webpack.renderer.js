@@ -6,7 +6,6 @@ const common = require('./webpack.common');
 const fs = require('fs');
 
 const dir =  fs.readdirSync(path.resolve(__dirname,'../src/windows'));
-console.log(dir);
 const entry = {};
 const htmlPlugins = [];
 dir.forEach(dirname=>{
